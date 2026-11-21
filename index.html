@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TechMarket — Магазин електроніки</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #10131c;
+  color: white;
+}
+
+header {
+  background: #191e2c;
+  padding: 20px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #30394d;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 25px;
+  color: #70e1ff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.cart-button {
+  background: #70e1ff;
+  color: #10131c;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 35px 20px;
+}
+
+h1 { font-size: 34px; margin-bottom: 10px; }
+.subtitle { color: #9da8bd; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.stat, .card, .user, .cart-panel {
+  background: #1c2231;
+  border: 1px solid #30394d;
+  border-radius: 15px;
+}
+
+.stat { padding: 20px; }
+
+.stat strong {
+  display: block;
+  font-size: 26px;
+  color: #70e1ff;
+  margin-top: 10px;
+}
+
+h2 { margin: 35px 0 20px; }
+
+.products, .users {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  overflow: hidden;
+  transition: .2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: #70e1ff;
+}
+
+.card > img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background: white;
+  padding: 15px;
+}
+
+.info {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.info p {
+  color: #aab2c5;
+  font-size: 14px;
+  margin: 12px 0;
+  flex: 1;
+}
+
+.price {
+  font-size: 22px;
+  color: #70e1ff;
+  font-weight: bold;
+}
+
+/* ПРОДАВЕЦЬ ПІД ТОВАРОМ */
+.seller-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 8px 10px;
+  background: #141824;
+  border: 1px solid #2b3346;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.seller-badge:hover {
+  border-color: #70e1ff;
+  background: #192030;
+}
+
+.seller-badge img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.seller-badge span {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.seller-badge strong {
+  color: #70e1ff;
+  font-weight: normal;
+  text-decoration: underline;
+}
+
+.add-button {
+  width: 100%;
+  margin-top: 15px;
+  background: #70e1ff;
+  color: #10131c;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.add-button:hover { background: #40c8ee; }
+
+.user {
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  border: 1px solid #30394d;
+  border-radius: 15px;
+  background: #1c2231;
+  transition: 0.2s;
+}
+
+.user:hover {
+  border-color: #70e1ff;
+  transform: translateY(-3px);
+}
+
+.user img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user p {
+  color: #aab2c5;
+  margin-top: 7px;
+}
+
+#status {
+  color: #70e1ff;
+  margin-top: 15px;
+}
+
+/* КОШИК */
+
+.cart-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000b;
+  z-index: 20;
+}
+
+.cart-overlay.active { display: block; }
+
+.cart-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 420px;
+  max-width: 100%;
+  padding: 25px;
+  border-radius: 0;
+  overflow-y: auto;
+  background: #191e2c;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.close-button {
+  background: #30394d;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.close-button:hover { background: #424f6b; }
+
+.cart-item {
+  display: flex;
+  gap: 12px;
+  padding: 15px 0;
+  border-bottom: 1px solid #30394d;
+}
+
+.cart-item img {
+  width: 70px;
+  height: 70px;
+  background: white;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.cart-details { flex: 1; }
+
+.cart-details p {
+  color: #70e1ff;
+  margin: 7px 0;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity button {
+  background: #30394d;
+  border: none;
+  color: white;
+  padding: 6px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remove {
+  background: none !important;
+  color: #ff7777 !important;
+}
+
+.cart-total {
+  margin-top: 25px;
+  font-size: 23px;
+  color: #70e1ff;
+  font-weight: bold;
+}
+
+.empty {
+  color: #9da8bd;
+  text-align: center;
+  margin: 40px 0;
+}
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #818ba0;
+}
+
+/* АДАПТАЦІЯ */
+
+@media(max-width: 850px) {
+  .products, .users {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width: 550px) {
+  header { padding: 15px; }
+  .logo { font-size: 19px; }
+  .cart-button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  main { padding: 25px 14px; }
+  h1 { font-size: 25px; }
+  .stats { grid-template-columns: 1fr; }
+  .products, .users {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .card > img { height: 200px; }
+  .cart-panel {
+    width: 100%;
+    padding: 20px;
+  }
+  h2 { font-size: 21px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="index.html" class="logo">⚡ TechMarket</a>
+  <button class="cart-button" onclick="openCart()">
+    🛒 Кошик (<span id="cartCount">0</span>)
+  </button>
+</header>
+
+<main>
+
+<h1>Ласкаво просимо до TechMarket</h1>
+<p class="subtitle">Магазин електроніки та комплектуючих</p>
+<p id="status">Завантаження даних...</p>
+
+<div class="stats">
+  <div class="stat">
+    Користувачі
+    <strong id="userCount">0</strong>
+  </div>
+  <div class="stat">
+    Товари
+    <strong id="productCount">0</strong>
+  </div>
+  <div class="stat">
+    Загальна вартість
+    <strong id="total">0</strong>
+  </div>
+</div>
+
+<h2>🛍️ Каталог товарів</h2>
+<div class="products" id="products"></div>
+
+<h2>👥 Наші продавці</h2>
+<div class="users" id="users"></div>
+
+</main>
+
+<!-- ВІКНО КОШИКА -->
+<div class="cart-overlay" id="cartOverlay" onclick="overlayClick(event)">
+  <div class="cart-panel">
+    <div class="cart-header">
+      <h2>🛒 Мій кошик</h2>
+      <button class="close-button" onclick="closeCart()">✕</button>
+    </div>
+
+    <div id="cartItems"></div>
+
+    <div class="cart-total">
+      Разом: <span id="cartTotal">0</span> ₴
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 TechMarket | Powered by JSON API
+</footer>
+
+<script>
+const API = "https://myjsons.com/v/2e925432";
+
+let productsData = [];
+let usersData = [];
+let cart = [];
+
+try {
+  cart = JSON.parse(localStorage.getItem("techCart")) || [];
+  if (!Array.isArray(cart)) cart = [];
+} catch {
+  cart = [];
+}
+
+function saveCart() {
+  localStorage.setItem("techCart", JSON.stringify(cart));
+}
+
+function getSellerForProduct(product, productIndex) {
+  if (!usersData.length) return null;
+  const sellerId = product.author_id ?? product.user_id ?? product.seller_id;
+  if (sellerId !== undefined) {
+    const found = usersData.find(u => String(u.id) === String(sellerId));
+    if (found) return found;
+  }
+  return usersData[productIndex % usersData.length];
+}
+
+async function loadData() {
+  try {
+    const response = await fetch(API);
+    if (!response.ok) throw new Error("API error");
+
+    const data = await response.json();
+
+    usersData = (data.users || []).map((u, idx) => ({
+      ...u,
+      id: u.id ?? idx + 1
+    }));
+
+    productsData = (data.products || []).map((p, idx) => {
+      const seller = getSellerForProduct(p, idx);
+      return {
+        ...p,
+        sellerId: seller ? seller.id : null
+      };
+    });
+
+    document.getElementById("userCount").textContent = usersData.length;
+    document.getElementById("productCount").textContent = productsData.length;
+    document.getElementById("total").textContent =
+      productsData.reduce((sum, p) => sum + Number(p.price || 0), 0) + " ₴";
+
+    document.getElementById("users").innerHTML =
+      usersData.map(user => `
+        <a href="profile.html?id=${escapeHTML(user.id)}" class="user">
+          <img src="${safeURL(user.photo_url)}" alt="Користувач">
+          <div>
+            <strong>${escapeHTML(user.name)} ${escapeHTML(user.sirname)}</strong>
+            <p>Баланс: ${escapeHTML(user.balance)} ₴</p>
+          </div>
+        </a>
+      `).join("");
+
+    document.getElementById("products").innerHTML =
+      productsData.map((product, index) => {
+        const seller = usersData.find(u => String(u.id) === String(product.sellerId));
+        const sellerBlock = seller ? `
+          <a href="profile.html?id=${escapeHTML(seller.id)}" class="seller-badge">
+            <img src="${safeURL(seller.photo_url)}" alt="">
+            <span>Продавець: <strong>${escapeHTML(seller.name)} ${escapeHTML(seller.sirname)}</strong></span>
+          </a>
+        ` : "";
+
+        return `
+          <div class="card">
+            <img src="${safeURL(product.photo_url)}" alt="${escapeHTML(product.name)}">
+            <div class="info">
+              <h3>${escapeHTML(product.name)}</h3>
+              <p>${escapeHTML(product.description || "")}</p>
+              <div class="price">${escapeHTML(product.price)} ₴</div>
+              ${sellerBlock}
+              <button class="add-button" onclick="addToCart(${index})">
+                🛒 Додати в кошик
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+    document.getElementById("status").textContent = "✓ Дані успішно завантажено";
+    updateCart();
+
+  } catch (error) {
+    document.getElementById("status").textContent =
+      "Помилка завантаження API. Перевір з'єднання.";
+    console.error(error);
+  }
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function safeURL(value) {
+  try {
+    const url = new URL(value);
+    return ["https:", "http:"].includes(url.protocol) ? escapeHTML(url.href) : "";
+  } catch {
+    return "";
+  }
+}
+
+function addToCart(index) {
+  const product = productsData[index];
+  if (!product) return;
+
+  const existing = cart.find(item => String(item.id) === String(product.id));
+
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      photo_url: product.photo_url,
+      quantity: 1
+    });
+  }
+
+  saveCart();
+  updateCart();
+}
+
+function changeQuantity(id, amount) {
+  const item = cart.find(p => String(p.id) === String(id));
+  if (!item) return;
+
+  item.quantity += amount;
+  if (item.quantity <= 0) {
+    cart = cart.filter(p => String(p.id) !== String(id));
+  }
+
+  saveCart();
+  updateCart();
+}
+
+function removeItem(id) {
+  cart = cart.filter(p => String(p.id) !== String(id));
+  saveCart();
+  updateCart();
+}
+
+function updateCart() {
+  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  document.getElementById("cartCount").textContent = count;
+  document.getElementById("cartTotal").textContent = total;
+
+  const container = document.getElementById("cartItems");
+
+  if (!cart.length) {
+    container.innerHTML = '<p class="empty">Твій кошик поки порожній 😔</p>';
+    return;
+  }
+
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <img src="${safeURL(item.photo_url)}" alt="">
+      <div class="cart-details">
+        <strong>${escapeHTML(item.name)}</strong>
+        <p>${item.price * item.quantity} ₴</p>
+        <div class="quantity">
+          <button onclick="changeQuantity('${escapeHTML(item.id)}', -1)">−</button>
+          ${item.quantity}
+          <button onclick="changeQuantity('${escapeHTML(item.id)}', 1)">+</button>
+          <button class="remove" onclick="removeItem('${escapeHTML(item.id)}')">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function openCart() {
+  document.getElementById("cartOverlay").classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closeCart() {
+  document.getElementById("cartOverlay").classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+function overlayClick(event) {
+  if (event.target.id === "cartOverlay") closeCart();
+}
+
+loadData();
+</script>
+
+</body>
+</html>
